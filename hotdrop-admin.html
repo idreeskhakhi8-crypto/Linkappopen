@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🔥 HotDrop BH</title>
+<meta name="theme-color" content="#FF4500">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="HotDrop BH">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--gold:#D4A843;--deep:#1A0A00;--accent:#FF6B35;--cream:#FFF8EE;--light:#FFF3E0;--text:#3D2000;--muted:#8B6A45;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);min-height:100vh;}
+
+/* ===== HEADER ===== */
+.header{background:var(--deep);padding:24px 20px 18px;text-align:center;position:relative;overflow:hidden;}
+.header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(212,168,67,.2) 0%,transparent 70%);}
+.header-emoji{font-size:2rem;display:block;margin-bottom:4px;position:relative;}
+.header h1{font-family:'Playfair Display',serif;font-size:1.9rem;color:var(--gold);line-height:1.1;position:relative;}
+.header p{color:rgba(255,255,255,.6);font-size:.82rem;margin-top:4px;position:relative;}
+.badge{display:inline-block;background:var(--accent);color:white;font-size:.68rem;font-weight:600;padding:3px 10px;border-radius:20px;margin-top:6px;letter-spacing:.5px;text-transform:uppercase;position:relative;}
+.admin-trigger{position:absolute;top:12px;right:12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.3);font-size:.65rem;padding:5px 10px;border-radius:6px;cursor:pointer;font-family:'DM Sans',sans-serif;z-index:10;}
+.admin-trigger:hover{background:rgba(255,69,0,.2);color:rgba(255,255,255,.7);}
+
+.container{max-width:600px;margin:0 auto;padding:16px 14px 100px;}
+
+/* ===== SECTIONS ===== */
+.section{background:white;border-radius:16px;padding:18px;margin-bottom:14px;box-shadow:0 2px 12px rgba(0,0,0,.06);border:1px solid rgba(212,168,67,.12);}
+.section-title{font-family:'Playfair Display',serif;font-size:1.05rem;color:var(--deep);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+label{display:block;font-size:.75rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;margin-top:12px;}
+label:first-child{margin-top:0;}
+input[type="text"],input[type="tel"],input[type="number"],textarea,select{width:100%;padding:11px 13px;border:1.5px solid #E8D5B5;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.9rem;color:var(--text);background:var(--light);outline:none;transition:border-color .2s;}
+input:focus,textarea:focus,select:focus{border-color:var(--gold);background:white;}
+textarea{resize:vertical;min-height:75px;}
+.helper{font-size:.72rem;color:var(--muted);margin-top:3px;}
+.req{color:var(--accent);}
+
+/* ===== LOCATION ===== */
+.loc-btn{width:100%;padding:12px;background:linear-gradient(135deg,#1565C0,#0D47A1);color:white;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:8px;}
+.loc-st{display:none;border-radius:10px;padding:10px 13px;font-size:.8rem;margin-bottom:8px;line-height:1.5;}
+.ls-ok{background:#E8F5E9;border:1.5px solid #A5D6A7;color:#2E7D32;}
+.ls-err{background:#FFEBEE;border:1.5px solid #FFCDD2;color:#C62828;}
+.ls-load{background:#E3F2FD;border:1.5px solid #90CAF9;color:#1565C0;}
+.map-wrap{display:none;width:100%;border-radius:10px;overflow:hidden;border:1.5px solid #E8D5B5;margin-bottom:8px;}
+.map-wrap iframe{width:100%;height:160px;border:none;display:block;}
+.or-div{text-align:center;font-size:.72rem;color:var(--muted);font-weight:600;margin:6px 0;text-transform:uppercase;letter-spacing:1px;}
+
+/* ===== RESTAURANT CARDS ===== */
+.rest-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:8px;}
+.rest-card{border:1.5px solid #E8D5B5;border-radius:12px;padding:11px;cursor:pointer;background:var(--light);position:relative;transition:all .2s;}
+.rest-card:hover{border-color:var(--gold);background:#FFF9F0;}
+.rest-card.selected{border-color:var(--gold);background:#FFFBF0;box-shadow:0 0 0 2px rgba(212,168,67,.25);}
+.rest-card.selected::after{content:'✓';position:absolute;top:7px;right:9px;font-size:.8rem;color:var(--gold);font-weight:700;}
+.rest-card.partner{border:2px solid var(--gold);}
+.rest-emoji{font-size:1.4rem;display:block;margin-bottom:3px;}
+.rest-name{font-weight:700;font-size:.8rem;color:var(--deep);}
+.rest-type{font-size:.68rem;color:var(--muted);margin-top:1px;}
+
+/* ===== MENU ===== */
+.menu-box{margin-top:12px;}
+.menu-hdr{font-size:.78rem;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;padding-bottom:5px;border-bottom:1px dashed #E8D5B5;}
+.menu-item{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid #F5EDE0;gap:10px;}
+.menu-item:last-child{border-bottom:none;}
+.item-info{flex:1;}
+.item-name{font-size:.86rem;font-weight:500;color:var(--deep);}
+.item-price{font-size:.76rem;color:var(--muted);margin-top:1px;}
+.qty-ctrl{display:flex;align-items:center;gap:7px;}
+.qty-btn{width:30px;height:30px;border:1.5px solid #E8D5B5;border-radius:50%;background:white;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--deep);flex-shrink:0;transition:all .15s;}
+.qty-btn:hover{background:var(--gold);border-color:var(--gold);color:white;}
+.qty-num{font-size:.9rem;font-weight:700;min-width:22px;text-align:center;}
+
+/* ===== CUISINE CHIPS ===== */
+.c-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:8px 0 12px;}
+.c-chip{border:1.5px solid #E8D5B5;border-radius:9px;padding:9px;text-align:center;cursor:pointer;background:var(--light);font-size:.8rem;font-weight:600;color:var(--deep);transition:all .15s;}
+.c-chip:hover,.c-chip.sel{border-color:var(--gold);background:#FFFBF0;}
+
+/* ===== TIME ===== */
+.time-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;}
+.t-slot{border:1.5px solid #E8D5B5;border-radius:9px;padding:9px 5px;text-align:center;cursor:pointer;font-size:.78rem;font-weight:500;background:var(--light);color:var(--deep);transition:all .15s;}
+.t-slot.sel{border-color:var(--gold);background:#FFFBF0;font-weight:700;}
+
+/* ===== PAYMENT ===== */
+.pay-opts{display:flex;gap:9px;flex-wrap:wrap;}
+.pay-opt{flex:1;min-width:90px;border:1.5px solid #E8D5B5;border-radius:10px;padding:11px;text-align:center;cursor:pointer;background:var(--light);transition:all .15s;}
+.pay-opt.sel{border-color:var(--gold);background:#FFFBF0;}
+.pay-emoji{font-size:1.3rem;display:block;margin-bottom:3px;}
+.pay-label{font-size:.75rem;font-weight:600;color:var(--deep);}
+
+/* ===== SUMMARY ===== */
+.sum-box{background:var(--deep);border-radius:13px;padding:16px;}
+.sum-title{font-family:'Playfair Display',serif;font-size:.95rem;color:var(--gold);margin-bottom:10px;}
+.s-row{display:flex;justify-content:space-between;font-size:.82rem;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.07);color:rgba(255,255,255,.8);}
+.s-total{display:flex;justify-content:space-between;font-size:.95rem;font-weight:700;padding-top:9px;margin-top:4px;color:var(--gold);border-top:1px solid rgba(212,168,67,.35);}
+.note-box{background:linear-gradient(135deg,#FFF8EE,#FFF3E0);border:1px dashed var(--gold);border-radius:9px;padding:11px;font-size:.78rem;color:var(--muted);margin-top:9px;line-height:1.5;}
+.submit-btn{width:100%;padding:15px;background:linear-gradient(135deg,var(--accent),#E8501A);color:white;border:none;border-radius:13px;font-family:'Playfair Display',serif;font-size:1.05rem;cursor:pointer;margin-top:16px;box-shadow:0 4px 18px rgba(255,107,53,.35);transition:all .2s;}
+.submit-btn:active{transform:scale(.98);}
+
+/* ===== SUCCESS ===== */
+.success-screen{display:none;background:white;border-radius:18px;box-shadow:0 4px 24px rgba(0,0,0,.08);margin:16px 0;overflow:hidden;}
+.suc-top{background:var(--deep);padding:26px 22px;text-align:center;}
+.suc-icon{font-size:2.8rem;display:block;margin-bottom:8px;}
+.suc-ref{display:inline-block;background:rgba(212,168,67,.15);border:1.5px solid var(--gold);color:var(--gold);font-weight:700;padding:7px 18px;border-radius:8px;margin:8px 0;font-size:.88rem;letter-spacing:1px;}
+.suc-body{padding:18px 22px;}
+.suc-msg{background:linear-gradient(135deg,#1A0300,#2D0800);border-radius:13px;padding:18px;color:white;font-size:.84rem;line-height:1.9;margin-bottom:12px;}
+.suc-note{background:rgba(255,107,53,.08);border:1px solid rgba(255,107,53,.2);border-radius:9px;padding:11px;font-size:.74rem;color:#8B4513;line-height:1.6;margin-bottom:12px;}
+.wa-btn{display:block;background:linear-gradient(135deg,#25D366,#128C7E);color:white;text-decoration:none;padding:13px;border-radius:11px;font-weight:700;font-size:.88rem;text-align:center;}
+
+/* ===== ADMIN PANEL ===== */
+.admin-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:1000;backdrop-filter:blur(4px);}
+.admin-panel{position:fixed;top:0;right:-100%;width:min(420px,100vw);height:100vh;background:#0F0200;z-index:1001;transition:right .3s ease;overflow-y:auto;box-shadow:-4px 0 30px rgba(0,0,0,.5);}
+.admin-panel.open{right:0;}
+.admin-header{background:linear-gradient(135deg,#FF4500,#FF6B00);padding:18px 16px;display:flex;align-items:center;justify-content:space-between;}
+.admin-header h2{font-family:'Playfair Display',serif;font-size:1.2rem;color:white;}
+.admin-close{background:rgba(0,0,0,.2);border:none;color:white;font-size:1.3rem;cursor:pointer;width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;}
+.admin-body{padding:16px;}
+.admin-section{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:14px;margin-bottom:12px;}
+.admin-section-title{font-size:.72rem;font-weight:700;color:#D4A843;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px;}
+.admin-input{width:100%;padding:10px 12px;border:1.5px solid rgba(255,255,255,.1);border-radius:8px;background:rgba(255,255,255,.06);color:white;font-family:'DM Sans',sans-serif;font-size:.85rem;outline:none;margin-bottom:8px;}
+.admin-input:focus{border-color:#FF4500;}
+.admin-input::placeholder{color:rgba(255,255,255,.3);}
+.admin-btn{padding:9px 16px;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.8rem;font-weight:700;cursor:pointer;transition:all .15s;}
+.btn-orange{background:#FF4500;color:white;}
+.btn-orange:hover{background:#E83D00;}
+.btn-green{background:#2E7D32;color:white;}
+.btn-red{background:#C62828;color:white;}
+.btn-gray{background:rgba(255,255,255,.1);color:rgba(255,255,255,.7);}
+.admin-rest-item{display:flex;align-items:center;justify-content:space-between;padding:9px 11px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07);border-radius:8px;margin-bottom:6px;}
+.ari-name{font-size:.82rem;color:white;font-weight:500;}
+.ari-btns{display:flex;gap:5px;}
+.admin-menu-item{display:flex;align-items:center;justify-content:space-between;padding:8px 11px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:7px;margin-bottom:5px;}
+.ami-info{flex:1;}
+.ami-name{font-size:.8rem;color:rgba(255,255,255,.85);font-weight:500;}
+.ami-price{font-size:.72rem;color:#D4A843;}
+.rest-select-admin{width:100%;padding:10px 12px;border:1.5px solid rgba(255,255,255,.1);border-radius:8px;background:rgba(255,255,255,.06);color:white;font-family:'DM Sans',sans-serif;font-size:.85rem;outline:none;margin-bottom:8px;}
+.rest-select-admin option{background:#1A0300;color:white;}
+.admin-saved{background:rgba(46,125,50,.2);border:1px solid #2E7D32;color:#81C784;font-size:.78rem;padding:8px 12px;border-radius:7px;margin-bottom:10px;display:none;text-align:center;}
+.flex-row{display:flex;gap:8px;align-items:flex-end;}
+.flex-row input{flex:1;}
+
+@media(max-width:400px){.time-grid{grid-template-columns:1fr 1fr;}.header h1{font-size:1.6rem;}}
+</style>
+</head>
+<body>
+
+<!-- ADMIN OVERLAY -->
+<div class="admin-overlay" id="adminOverlay" onclick="closeAdmin()"></div>
+
+<!-- ADMIN PANEL -->
+<div class="admin-panel" id="adminPanel">
+  <div class="admin-header">
+    <h2>⚙️ Admin Panel</h2>
+    <button class="admin-close" onclick="closeAdmin()">✕</button>
+  </div>
+  <div class="admin-body">
+
+    <!-- SAVED MSG -->
+    <div class="admin-saved" id="savedMsg">✅ Changes saved successfully!</div>
+
+    <!-- SETTINGS -->
+    <div class="admin-section">
+      <div class="admin-section-title">⚙️ Business Settings</div>
+      <label style="color:rgba(255,255,255,.5);font-size:.72rem;">Business Name</label>
+      <input class="admin-input" id="a-bizName" placeholder="HotDrop BH">
+      <label style="color:rgba(255,255,255,.5);font-size:.72rem;">WhatsApp Number</label>
+      <input class="admin-input" id="a-waNum" placeholder="97338714405">
+      <label style="color:rgba(255,255,255,.5);font-size:.72rem;">Delivery Fee Note</label>
+      <input class="admin-input" id="a-delivNote" placeholder="BD 0.500–1.000 based on location">
+      <button class="admin-btn btn-green" onclick="saveSettings()">💾 Save Settings</button>
+    </div>
+
+    <!-- RESTAURANTS -->
+    <div class="admin-section">
+      <div class="admin-section-title">🍽️ Manage Restaurants</div>
+      <div id="a-restList"></div>
+      <div style="border-top:1px solid rgba(255,255,255,.08);padding-top:12px;margin-top:8px;">
+        <label style="color:rgba(255,255,255,.5);font-size:.72rem;">Add New Restaurant</label>
+        <input class="admin-input" id="a-newRestEmoji" placeholder="Emoji e.g. 🍕" style="width:80px;display:inline-block;margin-right:6px;">
+        <input class="admin-input" id="a-newRestName" placeholder="Restaurant Name" style="width:calc(100% - 88px);display:inline-block;">
+        <input class="admin-input" id="a-newRestType" placeholder="Type e.g. Pizza & Pasta">
+        <div style="display:flex;gap:6px;align-items:center;margin-top:4px;">
+          <label style="color:rgba(255,255,255,.5);font-size:.72rem;white-space:nowrap;">⭐ Partner?</label>
+          <input type="checkbox" id="a-newRestPartner" style="width:auto;margin:0;">
+        </div>
+        <button class="admin-btn btn-orange" style="margin-top:8px;width:100%;" onclick="addRestaurant()">+ Add Restaurant</button>
+      </div>
+    </div>
+
+    <!-- MENU ITEMS -->
+    <div class="admin-section">
+      <div class="admin-section-title">🛒 Manage Menu Items</div>
+      <label style="color:rgba(255,255,255,.5);font-size:.72rem;">Select Restaurant</label>
+      <select class="rest-select-admin" id="a-menuRestSelect" onchange="loadAdminMenu()">
+        <option value="">-- Choose Restaurant --</option>
+      </select>
+      <div id="a-menuList"></div>
+      <div style="border-top:1px solid rgba(255,255,255,.08);padding-top:12px;margin-top:8px;" id="a-addItemArea" style="display:none;">
+        <label style="color:rgba(255,255,255,.5);font-size:.72rem;">Add New Item</label>
+        <input class="admin-input" id="a-newItemName" placeholder="Item name e.g. 🍔 Big Burger">
+        <div class="flex-row">
+          <div style="flex:1;">
+            <label style="color:rgba(255,255,255,.5);font-size:.72rem;">Price (BD)</label>
+            <input class="admin-input" id="a-newItemPrice" type="number" step="0.001" placeholder="0.000" style="margin-bottom:0;">
+          </div>
+          <button class="admin-btn btn-orange" onclick="addMenuItem()">+ Add</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PASSWORD CHANGE -->
+    <div class="admin-section">
+      <div class="admin-section-title">🔒 Change Admin Password</div>
+      <input class="admin-input" id="a-newPass" type="password" placeholder="New Password">
+      <button class="admin-btn btn-gray" onclick="changePass()" style="width:100%;">Update Password</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- HEADER -->
+<div class="header">
+  <button class="admin-trigger" onclick="openAdminLogin()">⚙️ Admin</button>
+  <span class="header-emoji">🔥</span>
+  <h1 id="bizNameDisplay">HotDrop BH</h1>
+  <p>Order from your favourite Manama restaurants</p>
+  <span class="badge">🇧🇭 Bahrain · Delivery to your door</span>
+</div>
+
+<div class="container">
+
+  <!-- SUCCESS -->
+  <div class="success-screen" id="successScreen">
+    <div class="suc-top">
+      <span class="suc-icon">🎉</span>
+      <div style="font-family:'Playfair Display',serif;font-size:1.25rem;color:var(--gold);">Thank You! Order Received!</div>
+      <div class="suc-ref" id="orderRef">ORDER #0000</div>
+    </div>
+    <div class="suc-body">
+      <div class="suc-msg">
+        👋 <strong style="color:#D4A843;">Thank you for your order!</strong><br>
+        We have received your order! ✅<br>
+        ⏱️ Our team will call you within <strong style="color:#FF4500;">5 minutes</strong>.<br>
+        🛵 Food arrives in <strong style="color:#FF4500;">30–50 minutes</strong> — <strong style="color:#D4A843;">hot & fresh!</strong> 🔥<br>
+        💳 Payment upon delivery.<br>
+        📞 WhatsApp: <strong style="color:#25D366;" id="waDisplay">+973 38714405</strong>
+      </div>
+      <div class="suc-note">⭐ <strong>Thank you for choosing <span id="bizDisplay">HotDrop BH</span></strong> — Bahrain's fastest delivery! See you again! 🇧🇭</div>
+      <a class="wa-btn" id="waBtn" href="#" target="_blank">💬 Track on WhatsApp</a>
+    </div>
+  </div>
+
+  <!-- STEP 1 -->
+  <div class="section" id="s1">
+    <div class="section-title"><span>👤</span> Your Details</div>
+    <label>Full Name <span class="req">*</span></label>
+    <input type="text" id="custName" placeholder="e.g. Ahmed Al Mansoori">
+    <label>Phone Number <span class="req">*</span></label>
+    <input type="tel" id="custPhone" placeholder="+973 3XXX XXXX">
+    <label>📍 Live Location</label>
+    <button class="loc-btn" id="locBtn" onclick="getLocation()">📡 Share My Live Location</button>
+    <div class="loc-st" id="locSt"></div>
+    <div class="map-wrap" id="mapWrap"><iframe id="mapFrame" src="" allowfullscreen></iframe></div>
+    <div class="or-div">— or type address —</div>
+    <label>Delivery Address</label>
+    <textarea id="custAddr" placeholder="Block, Road, Building, Flat — Manama, Bahrain"></textarea>
+    <div class="helper">Share live location OR type address. At least one required.</div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="section" id="s2">
+    <div class="section-title"><span>🍽️</span> Choose Restaurant</div>
+    <div class="rest-grid" id="restGrid"></div>
+    <div id="menuArea"></div>
+    <div style="margin-top:14px;">
+      <label>Special Instructions</label>
+      <input type="text" id="specNote" placeholder="No onions, extra sauce, well done...">
+    </div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="section" id="s3">
+    <div class="section-title"><span>🕐</span> Delivery Time</div>
+    <div class="time-grid">
+      <div class="t-slot" onclick="pickTime(this,'ASAP')">⚡ ASAP</div>
+      <div class="t-slot" onclick="pickTime(this,'30 min')">30 min</div>
+      <div class="t-slot" onclick="pickTime(this,'1 hour')">1 hour</div>
+      <div class="t-slot" onclick="pickTime(this,'Lunch 12–2')">🌞 Lunch</div>
+      <div class="t-slot" onclick="pickTime(this,'Dinner 7–9')">🌙 Dinner</div>
+      <div class="t-slot" onclick="pickTime(this,'Late Night')">🦉 Late</div>
+    </div>
+  </div>
+
+  <!-- STEP 4 -->
+  <div class="section" id="s4">
+    <div class="section-title"><span>💳</span> Payment</div>
+    <div class="pay-opts">
+      <div class="pay-opt" onclick="pickPay(this,'Cash on Delivery')"><span class="pay-emoji">💵</span><div class="pay-label">Cash</div></div>
+      <div class="pay-opt" onclick="pickPay(this,'BenefitPay')"><span class="pay-emoji">📱</span><div class="pay-label">BenefitPay</div></div>
+      <div class="pay-opt" onclick="pickPay(this,'Bank Transfer')"><span class="pay-emoji">🏦</span><div class="pay-label">Bank Transfer</div></div>
+    </div>
+  </div>
+
+  <!-- SUMMARY -->
+  <div class="section" id="s5">
+    <div class="section-title"><span>🧾</span> Order Summary</div>
+    <div class="sum-box">
+      <div class="sum-title">Your Order</div>
+      <div id="sumItems"><div class="s-row"><span>No items yet</span><span>—</span></div></div>
+      <div class="s-total" id="sumTotal"><span>Subtotal</span><span>BD 0.000</span></div>
+    </div>
+    <div class="note-box" id="delivNote">📌 Delivery fee BD 0.500–1.000 based on location. Team confirms total when they call.</div>
+    <button class="submit-btn" onclick="placeOrder()">🛵 Place My Order →</button>
+  </div>
+
+</div>
+
+<!-- ADMIN LOGIN MODAL -->
+<div id="loginModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:2000;display:none;align-items:center;justify-content:center;">
+  <div style="background:#1A0300;border:1px solid #FF4500;border-radius:16px;padding:24px;width:min(320px,90vw);text-align:center;">
+    <div style="font-size:2rem;margin-bottom:8px;">🔒</div>
+    <div style="font-family:'Playfair Display',serif;color:#D4A843;font-size:1.1rem;margin-bottom:16px;">Admin Access</div>
+    <input type="password" id="loginPass" placeholder="Enter password" style="width:100%;padding:11px 13px;border:1.5px solid rgba(255,255,255,.15);border-radius:10px;background:rgba(255,255,255,.07);color:white;font-family:'DM Sans',sans-serif;font-size:.9rem;outline:none;margin-bottom:12px;" onkeydown="if(event.key==='Enter')checkLogin()">
+    <div style="display:flex;gap:8px;">
+      <button onclick="document.getElementById('loginModal').style.display='none'" style="flex:1;padding:10px;background:rgba(255,255,255,.08);border:none;border-radius:8px;color:rgba(255,255,255,.6);cursor:pointer;font-family:'DM Sans',sans-serif;">Cancel</button>
+      <button onclick="checkLogin()" style="flex:1;padding:10px;background:#FF4500;border:none;border-radius:8px;color:white;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;">Enter</button>
+    </div>
+    <div id="loginErr" style="color:#EF9A9A;font-size:.75rem;margin-top:8px;display:none;">❌ Wrong password!</div>
+  </div>
+</div>
+
+<script>
+// ===== DEFAULT DATA =====
+const DEFAULT = {
+  bizName: 'HotDrop BH',
+  waNum: '97338714405',
+  delivNote: 'BD 0.500–1.000 based on location. Team confirms total when they call.',
+  adminPass: 'hotdrop2024',
+  restaurants: [
+    {id:'blackstripe', emoji:'🔥', name:'Black Stripe', type:'⭐ Official Partner · Gourmet Burgers', partner:true},
+    {id:'kfc', emoji:'🍗', name:'KFC', type:'Fried Chicken', partner:false},
+    {id:'mcdonalds', emoji:'🍔', name:"McDonald's", type:'Fast Food', partner:false},
+    {id:'other', emoji:'✏️', name:'Other Restaurant', type:'Any restaurant in Manama!', partner:false},
+  ],
+  menus: {
+    blackstripe:[
+      {n:'🔥 Son of a Butcher',p:5.20},{n:'🧀 Truffle Cheeseburger Crispy',p:5.50},
+      {n:'🧀 Truffle Cheeseburger Decadent',p:5.50},{n:'🍄 Peppercorn Mushroom Melt',p:5.50},
+      {n:'🥩 Steakhouse Burger',p:5.20},{n:'🥓 Bacon Jam Cheeseburger',p:5.20},
+      {n:'🍔 Signature Cheeseburger',p:4.90},{n:'💥 Smash Burger',p:4.90},
+      {n:'🍔 Classic Cheeseburger',p:4.50},{n:'🥩 Signature Steak Frites',p:14.90},
+      {n:'🥖 Philly Cheesesteak',p:6.20},{n:'🌶️ Korean Fried Chicken Bun',p:4.80},
+      {n:'🍗 Crunchy Chicken Bun',p:4.40},{n:'🔥 Buffalo Chicken Crunch',p:4.40},
+      {n:'🥦 Veggie Burger',p:4.40},{n:'🌭 Spicy Fat Dog',p:4.40},
+      {n:'🌭 Classic Hotdog',p:3.40},{n:'🍟 Signature French Fries',p:4.10},
+      {n:'🌶️ Chilli Cheese Fries',p:4.10},{n:'🧀 Parmesan Truffle Fries',p:4.50},
+      {n:'🍗 Crispy Chicken Bites',p:3.90},{n:'🍗 Wings — Pomegranate',p:3.80},
+      {n:'🍗 Wings — Mango Habanero',p:3.50},{n:'🍗 Wings — Tangy Tomato',p:3.20},
+      {n:'🥒 Batter-Fried Pickles',p:2.00},{n:'🍠 Sweet Potato Fries',p:1.90},
+      {n:'🍟 Seasoned Fries',p:1.90},{n:'🧅 Onion Rings',p:1.90},
+      {n:'🍟 French Fries',p:1.80},{n:'🍫 Chocolate Shake',p:2.70},
+      {n:'🍓 Strawberry Shake',p:2.70},{n:'🍦 Vanilla Shake',p:2.70},
+      {n:'🎂 Chocolate Cake Shake',p:3.20},{n:'🍵 Iced Tea',p:2.80},
+      {n:'🫧 Soda',p:0.90},{n:'💧 Water',p:0.50},
+      {n:'🍫 Brownies',p:2.60},{n:'🍌 Banana Pudding',p:2.60},
+    ],
+    kfc:[
+      {n:'Zinger Burger',p:1.8},{n:'Mighty Zinger',p:2.2},
+      {n:'Original Recipe (2pc)',p:2.0},{n:'Crispy Strips (4pc)',p:2.2},
+      {n:'Bucket (8pc)',p:5.5},{n:'Family Feast',p:8.5},
+      {n:'Coleslaw',p:0.4},{n:'Pepsi (Large)',p:0.5},
+    ],
+    mcdonalds:[
+      {n:'Big Mac',p:1.8},{n:'Quarter Pounder',p:2.0},
+      {n:'McChicken',p:1.4},{n:'Filet-O-Fish',p:1.5},
+      {n:'McNuggets (6pc)',p:1.6},{n:'McNuggets (9pc)',p:2.1},
+      {n:'Large Fries',p:0.8},{n:'Medium Fries',p:0.6},
+      {n:'McFlurry',p:0.9},{n:'Soft Drink',p:0.5},
+    ],
+    other:[],
+  }
+};
+
+// ===== LOAD / SAVE =====
+function loadData() {
+  try { return JSON.parse(localStorage.getItem('hotdropData')) || DEFAULT; }
+  catch(e) { return DEFAULT; }
+}
+function saveData(d) {
+  localStorage.setItem('hotdropData', JSON.stringify(d));
+}
+
+let DATA = loadData();
+let curRest=null, curTime=null, curPay=null, qty={}, userLoc=null, curCuisine='';
+
+// ===== INIT =====
+function init() {
+  document.getElementById('bizNameDisplay').textContent = DATA.bizName;
+  document.getElementById('bizDisplay').textContent = DATA.bizName;
+  document.getElementById('waDisplay').textContent = '+' + DATA.waNum;
+  document.getElementById('delivNote').textContent = '📌 Delivery fee ' + DATA.delivNote;
+  buildRestGrid();
+}
+
+// ===== BUILD RESTAURANT GRID =====
+function buildRestGrid() {
+  const grid = document.getElementById('restGrid');
+  grid.innerHTML = '';
+  DATA.restaurants.forEach(r => {
+    const card = document.createElement('div');
+    card.className = 'rest-card' + (r.partner ? ' partner' : '');
+    card.id = 'rc-' + r.id;
+    if (r.partner || r.id === 'other') card.style.gridColumn = 'span 2';
+    card.onclick = () => pickRest(r.id, card);
+    card.innerHTML = `<span class="rest-emoji">${r.emoji}</span><div class="rest-name">${r.name}</div><div class="rest-type">${r.type}</div>`;
+    grid.appendChild(card);
+  });
+}
+
+// ===== PICK RESTAURANT =====
+function pickRest(id, card) {
+  document.querySelectorAll('.rest-card').forEach(c=>c.classList.remove('selected'));
+  card.classList.add('selected');
+  curRest = id; qty = {}; curCuisine = '';
+  const area = document.getElementById('menuArea');
+  area.innerHTML = '';
+
+  if (id === 'other') {
+    area.innerHTML = `
+    <div class="menu-box">
+      <div class="menu-hdr">📝 Tell Us What You Want</div>
+      <label>Select Cuisine</label>
+      <div class="c-grid" id="cGrid">
+        <div class="c-chip" onclick="pickCuisine(this,'🍔 Burgers')">🍔 Burgers</div>
+        <div class="c-chip" onclick="pickCuisine(this,'🍕 Pizza')">🍕 Pizza</div>
+        <div class="c-chip" onclick="pickCuisine(this,'🍗 Chicken')">🍗 Chicken</div>
+        <div class="c-chip" onclick="pickCuisine(this,'🌯 Shawarma')">🌯 Shawarma</div>
+        <div class="c-chip" onclick="pickCuisine(this,'🍛 Indian')">🍛 Indian</div>
+        <div class="c-chip" onclick="pickCuisine(this,'🫕 Bahraini')">🫕 Bahraini</div>
+        <div class="c-chip" onclick="pickCuisine(this,'🍜 Chinese')">🍜 Chinese</div>
+        <div class="c-chip" onclick="pickCuisine(this,'🥗 Healthy')">🥗 Healthy</div>
+        <div class="c-chip" onclick="pickCuisine(this,'🍦 Desserts')">🍦 Desserts</div>
+        <div class="c-chip" onclick="pickCuisine(this,'🍱 Other')">🍱 Other</div>
+      </div>
+      <label>Restaurant Name (Optional)</label>
+      <input type="text" id="otherRestName" placeholder="e.g. Nando's, Hardee's...">
+      <label style="margin-top:10px;">Your Order <span class="req">*</span></label>
+      <textarea id="otherTxt" placeholder="e.g. 2x Chicken Burger, 1x Large Fries..."></textarea>
+    </div>`;
+  } else {
+    const items = DATA.menus[id] || [];
+    if (!items.length) { area.innerHTML = '<div class="menu-box"><div class="menu-hdr">📋 No items yet — add from Admin Panel</div></div>'; return; }
+    const box = document.createElement('div');
+    box.className = 'menu-box';
+    const rName = DATA.restaurants.find(r=>r.id===id);
+    box.innerHTML = `<div class="menu-hdr">📋 ${rName ? rName.emoji+' '+rName.name : id} Menu</div>`;
+    items.forEach((item, i) => {
+      qty[i] = 0;
+      const row = document.createElement('div');
+      row.className = 'menu-item';
+      row.innerHTML = `
+        <div class="item-info">
+          <div class="item-name">${item.n}</div>
+          <div class="item-price">BD ${Number(item.p).toFixed(3)}</div>
+        </div>
+        <div class="qty-ctrl">
+          <button class="qty-btn" onclick="chgQty(${i},-1)">−</button>
+          <span class="qty-num" id="q${i}">0</span>
+          <button class="qty-btn" onclick="chgQty(${i},1)">+</button>
+        </div>`;
+      box.appendChild(row);
+    });
+    area.appendChild(box);
+  }
+  updateSum();
+}
+
+function pickCuisine(el, c) {
+  document.querySelectorAll('#cGrid .c-chip').forEach(x=>x.classList.remove('sel'));
+  el.classList.add('sel'); curCuisine=c;
+}
+function chgQty(i,d) { qty[i]=Math.max(0,(qty[i]||0)+d); document.getElementById('q'+i).textContent=qty[i]; updateSum(); }
+function updateSum() {
+  let html='',total=0;
+  const items = DATA.menus[curRest]||[];
+  items.forEach((item,i)=>{ const q=qty[i]||0; if(q>0){const s=q*item.p;total+=s;html+=`<div class="s-row"><span>${q}× ${item.n}</span><span>BD ${s.toFixed(3)}</span></div>`;} });
+  document.getElementById('sumItems').innerHTML=html||'<div class="s-row"><span>No items selected</span><span>—</span></div>';
+  document.getElementById('sumTotal').innerHTML=`<span>Subtotal</span><span>BD ${total.toFixed(3)}</span>`;
+}
+function pickTime(el,t){document.querySelectorAll('.t-slot').forEach(x=>x.classList.remove('sel'));el.classList.add('sel');curTime=t;}
+function pickPay(el,p){document.querySelectorAll('.pay-opt').forEach(x=>x.classList.remove('sel'));el.classList.add('sel');curPay=p;}
+
+// ===== LOCATION =====
+function getLocation(){
+  const btn=document.getElementById('locBtn'),st=document.getElementById('locSt');
+  if(!navigator.geolocation){st.className='loc-st ls-err';st.style.display='block';st.innerHTML='❌ Not supported.';return;}
+  btn.disabled=true;btn.innerHTML='⏳ Getting location...';
+  st.className='loc-st ls-load';st.style.display='block';st.innerHTML='📡 Detecting...';
+  navigator.geolocation.getCurrentPosition(pos=>{
+    const lat=pos.coords.latitude.toFixed(6),lng=pos.coords.longitude.toFixed(6);
+    userLoc={lat,lng};
+    st.className='loc-st ls-ok';st.innerHTML=`✅ Location captured! ±${Math.round(pos.coords.accuracy)}m`;
+    document.getElementById('mapFrame').src=`https://maps.google.com/maps?q=${lat},${lng}&z=16&output=embed`;
+    document.getElementById('mapWrap').style.display='block';
+    btn.disabled=false;btn.innerHTML='✅ Location Shared!';btn.style.background='linear-gradient(135deg,#2E7D32,#1B5E20)';
+  },err=>{
+    let m='❌ ';if(err.code===1)m+='Allow location permission.';else if(err.code===2)m+='Unavailable. Type address.';else m+='Timed out.';
+    st.className='loc-st ls-err';st.style.display='block';st.innerHTML=m;
+    btn.disabled=false;btn.innerHTML='📡 Try Again';
+  },{enableHighAccuracy:true,timeout:10000,maximumAge:0});
+}
+
+// ===== PLACE ORDER =====
+function placeOrder(){
+  const name=document.getElementById('custName').value.trim();
+  const phone=document.getElementById('custPhone').value.trim();
+  const addr=document.getElementById('custAddr').value.trim();
+  if(!name){alert('Please enter your name!');return;}
+  if(!phone){alert('Please enter your phone number!');return;}
+  if(!addr&&!userLoc){alert('Please share live location OR type address!');return;}
+  if(!curRest){alert('Please choose a restaurant!');return;}
+  if(!curTime){alert('Please select delivery time!');return;}
+  if(!curPay){alert('Please select payment method!');return;}
+
+  let items='',total=0;
+  if(curRest==='other'){
+    const txt=document.getElementById('otherTxt');
+    if(!txt||!txt.value.trim()){alert('Please describe your order!');return;}
+    const rn=document.getElementById('otherRestName')?.value.trim()||'Not specified';
+    items=`Cuisine: ${curCuisine||'Not specified'}\nRestaurant: ${rn}\nOrder: ${txt.value.trim()}`;
+  } else {
+    const has=Object.values(qty).some(q=>q>0);
+    if(!has){alert('Please add at least one item!');return;}
+    (DATA.menus[curRest]||[]).forEach((item,i)=>{const q=qty[i]||0;if(q>0){const s=q*item.p;total+=s;items+=`• ${q}x ${item.n} — BD ${s.toFixed(3)}\n`;}});
+  }
+
+  const ref='HDB-'+Math.floor(Math.random()*9000+1000);
+  document.getElementById('orderRef').textContent='ORDER #'+ref;
+  const locTxt=userLoc?`📍 Live: https://maps.google.com/?q=${userLoc.lat},${userLoc.lng}`:`📍 Address: ${addr}`;
+  const note=document.getElementById('specNote').value.trim();
+  const rObj=DATA.restaurants.find(r=>r.id===curRest);
+  const rLabel=curRest==='other'?(document.getElementById('otherRestName')?.value||'Other'):(rObj?rObj.emoji+' '+rObj.name:curRest);
+
+  const msg=`🔥 *NEW ORDER — ${DATA.bizName}*\n📦 Order #${ref}\n\n👤 *Customer:* ${name}\n📞 *Phone:* ${phone}\n${locTxt}\n\n🍽️ *Restaurant:* ${rLabel}\n🛒 *Items:*\n${items}\n💰 *Subtotal:* BD ${total.toFixed(3)}\n🕐 *Time:* ${curTime}\n💳 *Payment:* ${curPay}${note?`\n📝 *Note:* ${note}`:''}\n\n✅ Confirm & deliver!`;
+  const waURL=`https://wa.me/${DATA.waNum}?text=${encodeURIComponent(msg)}`;
+  document.getElementById('waBtn').href=waURL;
+  document.querySelectorAll('.section').forEach(s=>s.style.display='none');
+  document.getElementById('successScreen').style.display='block';
+  window.scrollTo({top:0,behavior:'smooth'});
+  setTimeout(()=>{window.location.href=waURL;},700);
+}
+
+// ===== ADMIN LOGIN =====
+function openAdminLogin(){
+  document.getElementById('loginModal').style.display='flex';
+  document.getElementById('loginPass').value='';
+  document.getElementById('loginErr').style.display='none';
+  setTimeout(()=>document.getElementById('loginPass').focus(),100);
+}
+function checkLogin(){
+  const pass=document.getElementById('loginPass').value;
+  if(pass===DATA.adminPass){
+    document.getElementById('loginModal').style.display='none';
+    openAdmin();
+  } else {
+    document.getElementById('loginErr').style.display='block';
+  }
+}
+function openAdmin(){
+  document.getElementById('adminOverlay').style.display='block';
+  document.getElementById('adminPanel').classList.add('open');
+  // Fill settings
+  document.getElementById('a-bizName').value=DATA.bizName;
+  document.getElementById('a-waNum').value=DATA.waNum;
+  document.getElementById('a-delivNote').value=DATA.delivNote;
+  renderAdminRests();
+  populateMenuSelect();
+}
+function closeAdmin(){
+  document.getElementById('adminOverlay').style.display='none';
+  document.getElementById('adminPanel').classList.remove('open');
+}
+
+// ===== ADMIN: SETTINGS =====
+function saveSettings(){
+  DATA.bizName=document.getElementById('a-bizName').value.trim()||'HotDrop BH';
+  DATA.waNum=document.getElementById('a-waNum').value.trim()||'97338714405';
+  DATA.delivNote=document.getElementById('a-delivNote').value.trim();
+  saveData(DATA); showSaved(); init();
+}
+
+// ===== ADMIN: RESTAURANTS =====
+function renderAdminRests(){
+  const list=document.getElementById('a-restList');
+  list.innerHTML='';
+  DATA.restaurants.forEach((r,i)=>{
+    if(r.id==='other') return; // can't delete Other
+    const div=document.createElement('div');
+    div.className='admin-rest-item';
+    div.innerHTML=`<div class="ari-name">${r.emoji} ${r.name}</div><div class="ari-btns"><button class="admin-btn btn-red" onclick="deleteRest(${i})">🗑️</button></div>`;
+    list.appendChild(div);
+  });
+}
+function addRestaurant(){
+  const emoji=document.getElementById('a-newRestEmoji').value.trim()||'🍽️';
+  const name=document.getElementById('a-newRestName').value.trim();
+  const type=document.getElementById('a-newRestType').value.trim();
+  const partner=document.getElementById('a-newRestPartner').checked;
+  if(!name){alert('Please enter restaurant name!');return;}
+  const id='rest_'+Date.now();
+  DATA.restaurants.splice(DATA.restaurants.length-1, 0, {id,emoji,name,type,partner});
+  if(!DATA.menus[id]) DATA.menus[id]=[];
+  document.getElementById('a-newRestEmoji').value='';
+  document.getElementById('a-newRestName').value='';
+  document.getElementById('a-newRestType').value='';
+  document.getElementById('a-newRestPartner').checked=false;
+  saveData(DATA); buildRestGrid(); renderAdminRests(); populateMenuSelect(); showSaved();
+}
+function deleteRest(i){
+  if(!confirm('Delete '+DATA.restaurants[i].name+'?')) return;
+  const id=DATA.restaurants[i].id;
+  delete DATA.menus[id];
+  DATA.restaurants.splice(i,1);
+  saveData(DATA); buildRestGrid(); renderAdminRests(); populateMenuSelect(); showSaved();
+}
+
+// ===== ADMIN: MENU ITEMS =====
+function populateMenuSelect(){
+  const sel=document.getElementById('a-menuRestSelect');
+  sel.innerHTML='<option value="">-- Choose Restaurant --</option>';
+  DATA.restaurants.forEach(r=>{
+    if(r.id==='other') return;
+    const opt=document.createElement('option');
+    opt.value=r.id; opt.textContent=r.emoji+' '+r.name;
+    sel.appendChild(opt);
+  });
+  document.getElementById('a-menuList').innerHTML='';
+  document.getElementById('a-addItemArea') && (document.getElementById('a-addItemArea').style.display='none');
+}
+function loadAdminMenu(){
+  const id=document.getElementById('a-menuRestSelect').value;
+  const list=document.getElementById('a-menuList');
+  list.innerHTML='';
+  if(!id) return;
+  document.getElementById('a-addItemArea').style.display='block';
+  (DATA.menus[id]||[]).forEach((item,i)=>{
+    const div=document.createElement('div');
+    div.className='admin-menu-item';
+    div.innerHTML=`<div class="ami-info"><div class="ami-name">${item.n}</div><div class="ami-price">BD ${Number(item.p).toFixed(3)}</div></div><button class="admin-btn btn-red" onclick="deleteMenuItem('${id}',${i})">🗑️</button>`;
+    list.appendChild(div);
+  });
+}
+function addMenuItem(){
+  const id=document.getElementById('a-menuRestSelect').value;
+  const name=document.getElementById('a-newItemName').value.trim();
+  const price=parseFloat(document.getElementById('a-newItemPrice').value);
+  if(!id){alert('Select a restaurant first!');return;}
+  if(!name){alert('Enter item name!');return;}
+  if(isNaN(price)||price<0){alert('Enter valid price!');return;}
+  if(!DATA.menus[id]) DATA.menus[id]=[];
+  DATA.menus[id].push({n:name,p:price});
+  document.getElementById('a-newItemName').value='';
+  document.getElementById('a-newItemPrice').value='';
+  saveData(DATA); loadAdminMenu(); showSaved();
+}
+function deleteMenuItem(restId,i){
+  DATA.menus[restId].splice(i,1);
+  saveData(DATA); loadAdminMenu(); showSaved();
+}
+
+// ===== ADMIN: PASSWORD =====
+function changePass(){
+  const p=document.getElementById('a-newPass').value.trim();
+  if(!p||p.length<4){alert('Password must be at least 4 characters!');return;}
+  DATA.adminPass=p;
+  saveData(DATA); document.getElementById('a-newPass').value='';
+  showSaved();
+}
+
+function showSaved(){
+  const m=document.getElementById('savedMsg');
+  m.style.display='block';
+  setTimeout(()=>m.style.display='none',2500);
+}
+
+// ===== PWA =====
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault();deferredPrompt=e;
+});
+window.addEventListener('load',()=>{
+  const isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent);
+  if(isIOS&&!window.navigator.standalone){
+    setTimeout(()=>{
+      const h=document.createElement('div');
+      h.style.cssText='position:fixed;bottom:0;left:0;right:0;background:#1A0300;border-top:2px solid #FF4500;padding:14px;text-align:center;z-index:9999;';
+      h.innerHTML='<div style="color:#D4A843;font-weight:700;margin-bottom:6px;">📱 Install HotDrop BH on iPhone!</div><div style="font-size:.78rem;color:rgba(255,255,255,.7);line-height:1.9;">1️⃣ Tap Share (□↑) → 2️⃣ "Add to Home Screen" → 3️⃣ "Add"</div><button onclick="this.parentElement.remove()" style="margin-top:8px;background:#FF4500;color:white;border:none;padding:7px 20px;border-radius:8px;cursor:pointer;font-family:DM Sans,sans-serif;font-weight:700;">Got it!</button>';
+      document.body.appendChild(h);
+    },4000);
+  }
+});
+const mf={name:DATA.bizName,short_name:DATA.bizName,start_url:"./",display:"standalone",background_color:"#1A0300",theme_color:"#FF4500",icons:[{src:"https://placehold.co/192x192/FF4500/ffffff?text=HB",sizes:"192x192",type:"image/png"}]};
+const mfB=new Blob([JSON.stringify(mf)],{type:'application/json'});
+const mfL=document.createElement('link');mfL.rel='manifest';mfL.href=URL.createObjectURL(mfB);
+document.head.appendChild(mfL);
+
+// ===== START =====
+init();
+</script>
+</body>
+</html>
